@@ -1,4 +1,6 @@
-from django.http import HttpResponse
+import json
+
+from django.http import HttpResponse, JsonResponse
 
 def credits(request):
     content = 'Dzmitryi Lazarchyk\nSample name'
@@ -20,3 +22,11 @@ def about(request):
     content = "\n".join(content)
 
     return HttpResponse(content)
+
+def version_info(request):
+    data = {
+        'version': '0.0.1',
+    }
+
+
+    return JsonResponse(data)
