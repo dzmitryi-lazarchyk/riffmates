@@ -1,6 +1,7 @@
 import json
 
 from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render
 
 def credits(request):
     content = 'Dzmitryi Lazarchyk\nSample name'
@@ -30,3 +31,17 @@ def version_info(request):
 
 
     return JsonResponse(data)
+
+def news(request):
+    context = {
+        'news': [
+            "FoodMates now has a news page!",
+            "FoodMates has its first web page!",
+        ],
+    }
+
+    return render(
+        request,
+        template_name="news.html",
+        context=context
+    )
