@@ -1,0 +1,18 @@
+<!--\riffmates\templates\base.html-->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>
+        {% block title %}Foodmates{% endblock %}
+    </title>
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+
+</head>
+<body>
+    {% block content %}
+    {% endblock content %}
+    <script src="{% static 'js/bootstrap.js' %}"></script>
+</body>
+</html>
