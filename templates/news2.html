@@ -1,0 +1,16 @@
+<!--riffmates\templates\news2.html-->
+{% extends "base.html" %}
+
+{% block title %}
+    {{ block.super }}: News
+{% endblock %}
+
+{% block content %}
+    <h1>Foodmates News 2</h1>
+
+    <ul class="list-group" >
+        {% for item in news %}
+            <li class="list-group-item">{{ item }}</li>
+        {% endfor %}
+    </ul>
+{% endblock content %}

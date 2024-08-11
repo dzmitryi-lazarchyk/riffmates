@@ -42,6 +42,6 @@ def news(request):
 
     return render(
         request,
-        template_name="news.html",
+        template_name="news2.html",
         context=context
     )
