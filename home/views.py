@@ -1,4 +1,5 @@
 import json
+from datetime import date, timedelta
 
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
@@ -44,4 +45,21 @@ def news(request):
         request,
         template_name="news2.html",
         context=context
+    )
+
+def news_advanced(request):
+    today = date.today()
+    before1 = today - timedelta(days=1)
+    before2 = today - timedelta(days=2)
+
+    data = {
+        "news": [(today, "News from today"),
+                 (before1, "News from yesterday"),
+                 (before2, "News from the day before yesterday"),]
+    }
+
+    return render(
+        request,
+        template_name="news_adv.html",
+        context=data,
     )
