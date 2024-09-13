@@ -18,3 +18,9 @@ def member(request, member_id):
 
     return render(request, "member.html", data)
 
+def members(request):
+    data = {
+        'members': Member.objects.all().order_by("-last_name")
+    }
+
+    return render(request, "members.html", data)

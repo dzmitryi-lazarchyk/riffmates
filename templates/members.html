@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title%}
+    {{ block.super }}: Member Listing
+{% endblock %}
+
+{% block content %}
+    <h1>Members</h1>
+    <ul>
+        {% for member in members %}
+            <li><a href="{% url 'member' member.id %}">
+                {{ member.last_name }}, {{ member.first_name }}
+            </a></li>
+        {% empty %}
+            <li><i>No members yet.</i></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

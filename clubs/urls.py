@@ -6,4 +6,5 @@ from clubs import views
 
 urlpatterns = [
     path('member/<int:member_id>', views.member, name="member"),
+    path('members/', views.members, name="members"),
 ]
