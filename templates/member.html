@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ block.super }}: Member Details
+{% endblock %}
+
+{% block content %}
+<h1>{{ member.first_name }} {{ member.last_name }} <em class="text-muted"><small>{{ years }}</small></em></h1>
+{% endblock %}
