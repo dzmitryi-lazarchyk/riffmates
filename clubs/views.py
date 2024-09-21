@@ -1,6 +1,7 @@
 import datetime
 
 from django.shortcuts import render, get_object_or_404
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from clubs.models import Member
 
@@ -19,8 +20,20 @@ def member(request, member_id):
     return render(request, "member.html", data)
 
 def members(request):
+    all_members = Member.objects.all().order_by("-last_name")
+    paginator = Paginator(all_members, 2)
+
+    page_num = request.GET.get('page')
+    try:
+        page_obj = paginator.get_page(page_num)
+    except PageNotAnInteger:
+        page_obj = paginator.get_page(1)
+    except EmptyPage:
+        page_obj = paginator.get_page(paginator.num_pages)
+
     data = {
-        'members': Member.objects.all().order_by("-last_name")
+        'members': page_obj.object_list,
+        'page': page_obj,
     }
 
     return render(request, "members.html", data)
