@@ -26,5 +26,5 @@ urlpatterns = [
     path('version/', home_views.version_info),
     path('news/', home_views.news, name="news"),
     path('adv_news/', home_views.news_advanced, name="news_advanced"),
-    path('clubs/', include("clubs.urls"))
+    path('clubs/', include("clubs.urls", namespace='clubs'))
 ]
