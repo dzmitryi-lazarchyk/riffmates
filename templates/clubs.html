@@ -1,22 +1,21 @@
 {% extends "base.html" %}
 
 {% block title%}
-    {{ block.super }}: Member Listing
+    {{ block.super }}: Club Listing
 {% endblock %}
 
 {% block content %}
-    <h1>Members</h1>
+    <h1>Club</h1>
     <ul>
-        {% for member in members %}
-            <li><a href="{% url 'clubs:member' member.id %}">
-                {{ member.last_name }}, {{ member.first_name }}
+        {% for club in clubs %}
+            <li><a href="{% url 'clubs:club' club.id %}">
+                {{ club.name }}({{ club.count }})
             </a></li>
         {% empty %}
-            <li><i>No members yet.</i></li>
+            <li><i>No clubs yet.</i></li>
         {% endfor %}
     </ul>
     {% if page.has_other_pages %}
         {% include 'pagination.html' %}
     {% endif %}
-
 {% endblock %}

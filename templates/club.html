@@ -1,0 +1,16 @@
+<{% extends "base.html" %}
+
+{% block title %}
+    {{ block.super }}: Club Details
+{% endblock %}
+
+{% block content %}
+<h1>{{ club.name }}</h1>
+<br>
+<h2>Members:</h2>
+<br>
+    {% for member in club.members.all %}
+        <p><a href="{% url 'clubs:member' member.id %}">
+            {{ member.first_name }} {{member.last_name}}</a></p>
+    {% endfor %}
+{% endblock %}
