@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ block.super }}: Venues
+{% endblock %}
+
+{% block content %}
+    <h1>Venues</h1>
+    {% for venue in venues %}
+        <p>{{ venue.name }}</p>
+    {% empty %}
+        No venues yet.
+    {% endfor %}
+    {% if page.has_other_pages %}
+        {% include 'pagination.html' %}
+    {% endif %}
+{% endblock %}

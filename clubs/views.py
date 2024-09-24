@@ -4,21 +4,9 @@ from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count
 
-from clubs.models import Member, Club
+from clubs.models import Member, Club, Venue
 
 from datetime import date
-def member(request, member_id):
-    member = get_object_or_404(Member, id=member_id)
-
-    # Calculate years
-    birth = member.date_of_birth
-    now = datetime.date.today()
-    years = now.year - birth.year - ((now.month, now.day) < (birth.month, birth.day))
-
-    data = {"member": member,
-            "years": years}
-
-    return render(request, "member.html", data)
 
 def _get_items_per_page(request, default):
     # Determine number of items per page, disallowing <1 and >50
@@ -36,6 +24,21 @@ def _get_page(request, paginator):
     page_obj = paginator.get_page(page_num)
 
     return page_obj
+
+def member(request, member_id):
+    member = get_object_or_404(Member, id=member_id)
+
+    # Calculate years
+    birth = member.date_of_birth
+    now = datetime.date.today()
+    years = now.year - birth.year - ((now.month, now.day) < (birth.month, birth.day))
+
+    data = {"member": member,
+            "years": years}
+
+    return render(request, "member.html", data)
+
+
 def members(request):
     all_members = Member.objects.all().order_by("last_name")
     per_page = _get_items_per_page(request, 5)
@@ -74,3 +77,15 @@ def clubs(request):
     }
 
     return render(request, "clubs.html", data)
+
+def venues(request):
+    all_venues = Venue.objects.all().order_by('name')
+    per_page = _get_items_per_page(request, 5)
+    paginator = Paginator(all_venues, per_page)
+
+    page_obj = _get_page(request, paginator)
+
+    data = {'venues': page_obj.object_list,
+            'page': page_obj}
+
+    return render(request, "venues.html", data)
