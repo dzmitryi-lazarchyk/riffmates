@@ -1,5 +1,8 @@
+import datetime
+
 from django.db import models
 from django.core.validators import MinValueValidator
+
 
 class Member(models.Model):
     first_name = models.CharField(max_length=50)
@@ -8,6 +11,16 @@ class Member(models.Model):
 
     def __str__(self):
         return f'Member(id={self.id}, last_name={self.last_name})'
+
+    def calculate_years(self):
+        # Calculate years
+        birth = self.date_of_birth
+        now = datetime.date.today()
+        years = now.year - birth.year - ((now.month, now.day) < (birth.month, birth.day))
+
+        return years
+
+
 
 class Club(models.Model):
     name = models.CharField(max_length=20)

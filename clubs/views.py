@@ -28,10 +28,7 @@ def _get_page(request, paginator):
 def member(request, member_id):
     member = get_object_or_404(Member, id=member_id)
 
-    # Calculate years
-    birth = member.date_of_birth
-    now = datetime.date.today()
-    years = now.year - birth.year - ((now.month, now.day) < (birth.month, birth.day))
+    years = member.calculate_years()
 
     data = {"member": member,
             "years": years}
