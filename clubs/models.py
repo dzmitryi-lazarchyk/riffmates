@@ -2,6 +2,7 @@ import datetime
 
 from django.db import models
 from django.core.validators import MinValueValidator
+from django.contrib.auth.models import User
 
 
 class Member(models.Model):
@@ -55,3 +56,8 @@ class Table(models.Model):
 
     def __str__(self):
         return f"Table(id={self.id}, number={self.number})"
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    member_profile = models.OneToOneField(Member, blank=True, null=True, on_delete=models.SET_NULL)
+    venues_controlled = models.ManyToManyField(Venue, blank=True)

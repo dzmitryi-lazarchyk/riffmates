@@ -3,8 +3,10 @@ from datetime import datetime, date
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import User
 
-from clubs.models import Member, Club, Venue, Table
+from clubs.models import Member, Club, Venue, Table, UserProfile
 
 class DecadeListFilter(admin.SimpleListFilter):
     title = 'Decade born'
@@ -126,3 +128,14 @@ class VenueAdmin(admin.ModelAdmin):
 class TableAdmin(admin.ModelAdmin):
     list_display = ["number", "seats", "venue"]
     search_fields = ["seats", "venue"]
+
+class UserProfileInline(admin.StackedInline):
+    model = UserProfile
+    can_delete = False
+
+class UserAdmin(BaseUserAdmin):
+    inlines = [UserProfileInline]
+
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
+
