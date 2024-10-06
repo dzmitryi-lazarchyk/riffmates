@@ -1,6 +1,5 @@
 from django.urls import path
 
-import clubs.views
 
 from clubs import views
 
@@ -12,4 +11,5 @@ urlpatterns = [
     path('club/<int:club_id>', views.club, name="club"),
     path('clubs/', views.clubs, name="clubs"),
     path('venues/', views.venues, name="venues"),
+    path('restricted_page/', views.restricted_page, name="restricted_page"),
 ]

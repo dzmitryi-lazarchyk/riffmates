@@ -3,6 +3,7 @@ import datetime
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count
+from django.contrib.auth.decorators import login_required
 
 from clubs.models import Member, Club, Venue
 
@@ -86,3 +87,14 @@ def venues(request):
             'page': page_obj}
 
     return render(request, "venues.html", data)
+
+@login_required
+def restricted_page(request):
+    data = {
+        'title': 'Restricted Page',
+        'content': '<h1>You are logged in.</h1>'
+    }
+
+    return render(request,
+                  "general.html",
+                  data)
