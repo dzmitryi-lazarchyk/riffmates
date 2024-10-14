@@ -12,4 +12,5 @@ urlpatterns = [
     path('clubs/', views.clubs, name="clubs"),
     path('venues/', views.venues, name="venues"),
     path('restricted_page/', views.restricted_page, name="restricted_page"),
+    path('member_restricted/<int:member_id>', views.member_restricted, name="member_restricted"),
 ]

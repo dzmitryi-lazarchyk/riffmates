@@ -1,5 +1,6 @@
 import datetime
 
+from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count
@@ -98,3 +99,30 @@ def restricted_page(request):
     return render(request,
                   "general.html",
                   data)
+
+@login_required
+def member_restricted(request, member_id):
+    member = get_object_or_404(Member, id=member_id)
+    profile = request.user.userprofile
+    allowed = False
+
+    if profile.member_profile.id == member_id:
+        allowed = True
+    else:
+        # User is not this member. Check if they're food-mates
+        member_clubs = member.club_set.all()
+        for club in member_clubs:
+            if profile.member_profile in club.members.all():
+                allowed = True
+                break
+
+    if not allowed:
+        raise Http404("Permission denied.")
+    content = f"""
+        <h1>Member Page: {member.last_name}</h1>
+"""
+    data = {
+        'title': 'Member Restricted',
+        'content': content,
+    }
+    return render(request, "general.html", data)

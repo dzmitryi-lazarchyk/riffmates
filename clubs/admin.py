@@ -39,14 +39,16 @@ class DecadeListFilter(admin.SimpleListFilter):
 class MembershipInline(admin.TabularInline):
     model = Club.members.through
 
+
+
 @admin.register(Member)
 class MemberAdmin(admin.ModelAdmin):
     list_display = ("id", "last_name", "first_name",
                     "calculate_years", "show_weekday",
-                    "show_clubs")
+                    "show_clubs",)
     search_fields = ("first_name", "last_name")
     list_filter = (DecadeListFilter, )
-    inlines = [MembershipInline, ]
+    inlines = [MembershipInline,]
 
     def show_weekday(self, obj):
         # Fetch weekday of artict's birth
