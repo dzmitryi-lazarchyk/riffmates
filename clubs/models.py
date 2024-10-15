@@ -2,6 +2,8 @@ import datetime
 
 from django.db import models
 from django.core.validators import MinValueValidator
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.contrib.auth.models import User
 
 
@@ -61,3 +63,17 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     member_profile = models.OneToOneField(Member, blank=True, null=True, on_delete=models.SET_NULL)
     venues_controlled = models.ManyToManyField(Venue, blank=True)
+
+
+# Create UserProfile when User is created
+@receiver(post_save, sender=User)
+def user_post_save(sender, **kwargs):
+    if kwargs['created'] and not kwargs['raw']:
+        user = kwargs['instance']
+        try:
+            # Double check UserProfile doesn't exist already
+            # (admin might create it before the signal fires)
+            UserProfile.objects.get(user=user)
+        except UserProfile.DoesNotExist:
+            # No UserProfile exists for this user, create one
+            UserProfile.objects.create(user=user)

@@ -6,7 +6,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 
-from clubs.models import Member, Club, Venue
+from clubs.models import Member, Club, Venue, UserProfile
 
 from datetime import date
 
