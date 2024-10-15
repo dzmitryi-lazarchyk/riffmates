@@ -126,3 +126,7 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Account Management
+LOGIN_REDIRECT_URL = '/clubs/clubs'
+LOGOUT_REDIRECT_URL = '/clubs/clubs'

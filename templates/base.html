@@ -42,8 +42,21 @@ padding: 60px 15px 0;
                                 <a class="nav-link active" aria-current="page"
                                    href="{% url 'credits' %}">Credits</a>
                             </li>
+
                         </ul>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        {% if user.is_authenticated %}
+                            <a class="navbar-brand">Hello user, {{ user.username }} ! &nbsp;</a>
+                            <form id="logout-form" method="post" action="{% url 'logout' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-info">Logout</button>
+                            </form>
+                        {% else %}
+                                <a href="{% url 'login' %}" class="btn btn-info">Login</a>
+                        {% endif %}
                     </div>
+                    </div>
+
                 </div>
             </nav>
         {% endblock navbar %}
