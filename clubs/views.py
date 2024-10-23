@@ -4,7 +4,7 @@ from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 from clubs.models import Member, Club, Venue, UserProfile
 
@@ -88,6 +88,17 @@ def venues(request):
             'page': page_obj}
 
     return render(request, "venues.html", data)
+
+def user_associated_with_venue(user):
+    try:
+        return user.userprofile.venues_controlled.count() > 0
+    except AttributeError:
+        return False
+
+
+@user_passes_test(user_associated_with_venue)
+def venues_restricted(request):
+    venues(request)
 
 @login_required
 def restricted_page(request):

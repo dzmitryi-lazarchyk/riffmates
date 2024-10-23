@@ -5,6 +5,7 @@ from django.core.validators import MinValueValidator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
+from django.contrib.auth.signals import user_login_failed
 
 
 class Member(models.Model):
@@ -77,3 +78,12 @@ def user_post_save(sender, **kwargs):
         except UserProfile.DoesNotExist:
             # No UserProfile exists for this user, create one
             UserProfile.objects.create(user=user)
+
+# Login failed signal
+@receiver(user_login_failed)
+def track_login_failure(sender, **kwargs):
+    username = kwargs['credentials']['username']
+    url_and_params = lambda request:  request.path + '?next=' + request.GET['next'][1:] if request.GET else request.path
+    url = url_and_params(request=kwargs['request'])
+
+    print(f"LOGIN Failure by {username} for {url}")
