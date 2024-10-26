@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'home',
     'clubs',
+    'content',
+    'crispy_forms',
+    'crispy_bootstrap5',
 ]
 
 MIDDLEWARE = [
@@ -138,3 +141,5 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'xlimpx999@gmail.com'
 EMAIL_HOST_PASSWORD = 'sjmz yiwn rgxr twat'
 
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
