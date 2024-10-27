@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <h1>Seeking ad</h1>
+    <div class="mb-3">
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button class="btn btn-dark" type="submit">Save</button>
+    </form>
+    </div>
+    <br/>
+    <br/>
+    <br/>
+{% endblock %}

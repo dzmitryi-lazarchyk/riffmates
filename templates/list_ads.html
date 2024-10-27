@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Members seeking Clubs</h1>
+        <ul class="list-group list-group-flush">
+            {% for ad in seeking_band  %}
+                <li class="list-group-item">
+                    {{ ad.date }} &mdash;
+                    {{ ad.member.first_name }} {{ ad.member.last_name }}
+                    <br/>
+                    <i>{{ ad.content }}</i>
+                </li>
+            {% empty %}
+                <p><i>No ads at this time</i></p>
+            {% endfor %}
+        </ul>
+    <h1>Clubs seeking Members</h1>
+    <ul class="list-group list-group-flush">
+    {% for ad in seeking_member  %}
+        <li class="list-group-item">
+            {{ ad.date }} &mdash; {{ ad.club.name }}
+            <br/>
+            <i>{{ ad.content }}</i>
+        </li>
+    {% empty %}
+        <p><i>No ads at this time</i></p>
+    {% endfor %}
+    </ul>
+{% endblock %}
