@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
+    {% if user.is_authenticated %}
+        <a href="{% url 'content:seeking_ad' %}">New add</a>
+    {% endif %}
     <h1>Members seeking Clubs</h1>
         <ul class="list-group list-group-flush">
             {% for ad in seeking_band  %}
@@ -9,6 +12,9 @@
                     {{ ad.member.first_name }} {{ ad.member.last_name }}
                     <br/>
                     <i>{{ ad.content }}</i>
+                    {% if ad.owner == request.user or user.is_staff %}
+                        <a href="{% url 'content:edit_seeking_ad' ad.id %}">Edit</a>
+                    {% endif %}
                 </li>
             {% empty %}
                 <p><i>No ads at this time</i></p>
@@ -21,6 +27,9 @@
             {{ ad.date }} &mdash; {{ ad.club.name }}
             <br/>
             <i>{{ ad.content }}</i>
+            {% if ad.owner == request.user or user.is_staff %}
+                <a href="{% url 'content:edit_seeking_ad' ad.id %}">Edit</a>
+            {% endif %}
         </li>
     {% empty %}
         <p><i>No ads at this time</i></p>
