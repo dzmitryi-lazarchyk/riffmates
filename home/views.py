@@ -63,3 +63,6 @@ def news_advanced(request):
         template_name="news_adv.html",
         context=data,
     )
+
+def home(request):
+    return render(request, "home.html")

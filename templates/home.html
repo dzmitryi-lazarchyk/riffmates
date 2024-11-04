@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    <img src="{% static 'img/foodmates-high-resolution-logo-transparent.png' %}"
+         class="rounded mx-auto d-block" height="150">
+    <h1>Welcome to RiffMates!</h1>
+<ul>
+<li> <a href="{% url 'news' %}">News</a> </li>
+<li> <a href="{% url 'clubs:members' %}">Musicians</a> </li>
+<li> <a href="{% url 'clubs:clubs' %}">Bands</a> </li>
+<li> <a href="{% url 'clubs:venues' %}">Venues</a> </li>
+<li> <a href="{% url 'content:list_ads' %}">Classified Ads</a> </li>
+<li> <a href="{% url 'content:comment' %}">Leave a comment</a> </li>
+</ul>
+{% endblock content %}

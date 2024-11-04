@@ -25,7 +25,10 @@ padding: 60px 15px 0;
             <!--Fixed navbar-->
             <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
                 <div class="container-fluid">
-                    <a class="navbar-brand" href="#">Foodmates</a>
+                    <a class="navbar-brand" href="{% url 'home' %}">
+                        <img src="{% static 'img/foodmates-high-resolution-logo-transparent.png' %}"
+                             height="40">
+                    </a>
                     <button class="navbar-toggler" type="button"
                             data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
                             aria-controls="navbarCollapse" aria-expanded="false"
@@ -64,6 +67,7 @@ padding: 60px 15px 0;
     <!--Begin page content -->
     <main class="flex-shrink-0">
         <div class="container">
+        </br>
             {% block content %}
             {% endblock content %}
         </div>
