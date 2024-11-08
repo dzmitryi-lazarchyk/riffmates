@@ -5,12 +5,42 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Venues</h1>
-    {% for venue in venues %}
-        <p>{{ venue.name }}</p>
-    {% empty %}
-        No venues yet.
-    {% endfor %}
+    <h1>
+        Venues{% if user.is_authenticated %}
+              <a class="btn btn-primary" href="{% url 'clubs:add_venue' %}" role="button">Add Venue</a>
+              {% endif %}
+    </h1>
+    </br>
+    </br>
+    <div class="list-group">
+        {% for venue in venues  %}
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col col-lg-2">
+                    {% if venue.picture %}
+                        <img src="{{ venue.picture.url }}" class="rounded float-start" height="100" width="150">
+                    {% else %}
+                        <img src="{% static 'img/no-image.png' %}" class="rounded float-start" height="100" width="150">
+                    {% endif %}
+                </div>
+                <div class="col-6">
+                    <h5>{{ venue.name }}</h5>
+                    {% if  venue.description %}
+                        <p>{{ venue.description|truncatechars:150 }}</p>
+                    {% endif %}
+                </div>
+                <div class="col">
+                {% if  venue.controlled%}
+                    <a class="btn btn-primary" href="{% url 'clubs:edit_venue' venue.id %}" role="button">Edit Venue</a>
+                {% endif %}
+                </div>
+
+            </div>
+        </div>
+        {% empty %}
+            <p><i>No venues yet.</i></p>
+        {% endfor %}
+    </div>
     {% if page.has_other_pages %}
         {% include 'pagination.html' %}
     {% endif %}

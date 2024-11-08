@@ -1,12 +1,13 @@
 import datetime
 
 from django.http import Http404
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Count
+from django.db.models import Count, F, Q
 from django.contrib.auth.decorators import login_required, user_passes_test
 
-from clubs.models import Member, Club, Venue, UserProfile
+from clubs.models import Member, Club, Venue, Table
+from clubs.forms import VenueForm
 
 from datetime import date
 
@@ -78,7 +79,17 @@ def clubs(request):
     return render(request, "clubs.html", data)
 
 def venues(request):
-    all_venues = Venue.objects.all().order_by('name')
+    all_venues = Venue.objects.order_by('name')
+    profile = getattr(request.user, "userprofile", None)
+    if profile:
+        for venue in all_venues:
+            # Mark as controlled if logged user is
+            # associated with the venue
+            venue.controlled = \
+                profile.venues_controlled.filter(id=venue.id).exists()
+    else:
+        for venue in all_venues:
+            venue.controlled = False
     per_page = _get_items_per_page(request, 5)
     paginator = Paginator(all_venues, per_page)
 
@@ -137,3 +148,40 @@ def member_restricted(request, member_id):
         'content': content,
     }
     return render(request, "general.html", data)
+
+@login_required
+def add_edit_venue(request, venue_id=0):
+    add, edit = venue_id == 0, venue_id != 0
+    if edit:
+        venue = get_object_or_404(Venue, id=venue_id)
+        if not request.user.userprofile.venues_controlled.filter(
+                id=venue_id).exists():
+            raise Http404("You can only edit controlled venues.")
+
+    if request.method == "GET":
+        if add:
+            form = VenueForm()
+        else:
+            form = VenueForm(instance=venue)
+
+    else: #POST
+        if add:
+            venue = Venue.objects.create()
+
+        form = VenueForm(request.POST, request.FILES,
+                         instance=venue)
+
+        if form.is_valid():
+            venue = form.save()
+
+            # Add the venue to user's profile
+            request.user.userprofile.venues_controlled.add(venue)
+            return redirect("venues")
+
+    # GET or form is not valid
+    data = {
+        'form': form,
+        'venue': venue,
+    }
+
+    return render(request, "add_edit_venue.html", data)

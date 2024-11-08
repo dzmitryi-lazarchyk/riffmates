@@ -13,4 +13,6 @@ urlpatterns = [
     path('venues/', views.venues, name="venues"),
     path('restricted_page/', views.restricted_page, name="restricted_page"),
     path('member_restricted/<int:member_id>', views.member_restricted, name="member_restricted"),
+    path('edit_venue/', views.add_edit_venue, name="add_venue"),
+    path('edit_venue/<int:venue_id>', views.add_edit_venue, name="edit_venue"),
 ]
