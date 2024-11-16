@@ -25,7 +25,7 @@
     {% else %}
     <p><i>No description.</i></p>
     {% endif %}
-    {% if member.member_is_user %}
+    {% if member.controller %}
         <a class="btn btn-primary" href="{% url 'clubs:edit_member' member.id %}" role="button">
             Edit Member Info</a>
     {% endif %}

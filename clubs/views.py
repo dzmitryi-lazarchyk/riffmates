@@ -30,7 +30,11 @@ def _get_page(request, paginator):
 @login_required
 def member(request, member_id):
     member = get_object_or_404(Member, id=member_id)
-    member_is_user = request.user.userprofile.member_profile.id == member_id
+    member.controller = False
+    if request.user.is_staff:
+        member.controller = True
+    if hasattr(request.user, "userprofile"):
+        member.controller = request.user.userprofile.member_profile.id == member_id
     member.member_is_user = member_is_user
     years = member.calculate_years()
 
@@ -47,7 +51,8 @@ def add_edit_member(request, member_id=0):
         member_id = request.user.userprofile.member_profile.id
     if edit:
         member = get_object_or_404(Member, id=member_id)
-        if not member.userprofile.user.id == request.user.id:
+        if not request.user.userprofile.member_profile.member_id == member_id and \
+           not request.user.is_staff:
             raise Http404("You can only edit your own member profile info.")
 
     if request.method == "GET":
