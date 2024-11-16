@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    {% if not venue %}
+        <h1>Add new Venue</h1>
+    {% else %}
+        <h1>Edit venue: {{ venue.name }}</h1>
+    {% endif %}
+
+    <h1>Venue Details</h1>
+
+    <form enctype="multipart/form-data" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button class="btn btn-dark" type="submit">Save</button>
+    </form>
+{% endblock %}

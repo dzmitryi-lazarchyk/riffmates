@@ -7,7 +7,7 @@ from django.db.models import Count, F, Q
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 from clubs.models import Member, Club, Venue, Table
-from clubs.forms import VenueForm
+from clubs.forms import VenueForm, MemberForm
 
 from datetime import date
 
@@ -27,16 +27,54 @@ def _get_page(request, paginator):
     page_obj = paginator.get_page(page_num)
 
     return page_obj
-
+@login_required
 def member(request, member_id):
     member = get_object_or_404(Member, id=member_id)
-
+    member_is_user = request.user.userprofile.member_profile.id == member_id
+    member.member_is_user = member_is_user
     years = member.calculate_years()
 
     data = {"member": member,
             "years": years}
 
     return render(request, "member.html", data)
+@login_required
+def add_edit_member(request, member_id=0):
+    add, edit = member_id == 0, member_id != 0
+    member = None
+    if add and request.user.userprofile.member_profile:
+        add, edit = edit, add
+        member_id = request.user.userprofile.member_profile.id
+    if edit:
+        member = get_object_or_404(Member, id=member_id)
+        if not member.userprofile.user.id == request.user.id:
+            raise Http404("You can only edit your own member profile info.")
+
+    if request.method == "GET":
+        if add:
+            form = MemberForm()
+        else:
+            form = MemberForm(instance=member)
+
+    else: #POST
+        if add:
+            member = Member.objects.create(date_of_birth=date(1990, 1, 1))
+        form = MemberForm(request.POST, request.FILES, instance=member)
+
+        if form.is_valid():
+            member = form.save()
+            if not request.user.is_staff and add:
+                user_profile = request.user.userprofile
+                user_profile.member_profile = member
+                user_profile.save()
+            return redirect("clubs:members")
+
+    data = {
+        'form': form,
+        'member': member,
+    }
+
+    return render(request, "add_edit_member.html", data)
 
 
 def members(request):
@@ -176,7 +214,7 @@ def add_edit_venue(request, venue_id=0):
 
             # Add the venue to user's profile
             request.user.userprofile.venues_controlled.add(venue)
-            return redirect("venues")
+            return redirect("clubs:venues")
 
     # GET or form is not valid
     data = {

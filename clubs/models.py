@@ -12,6 +12,8 @@ class Member(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     date_of_birth = models.DateTimeField()
+    description = models.TextField(blank=True)
+    picture = models.ImageField(blank=True, null=True)
 
     class Meta:
         ordering = ["last_name", "first_name"]

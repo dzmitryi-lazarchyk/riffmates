@@ -11,5 +11,8 @@
 <li> <a href="{% url 'clubs:venues' %}">Venues</a> </li>
 <li> <a href="{% url 'content:list_ads' %}">Classified Ads</a> </li>
 <li> <a href="{% url 'content:comment' %}">Leave a comment</a> </li>
+{% if not user.userprofile.member_profile  %}
+    <li><a href="{% url 'clubs:add_member' %}">Add member profile</a></li>
+{% endif %}
 </ul>
 {% endblock content %}

@@ -5,5 +5,28 @@
 {% endblock %}
 
 {% block content %}
-<h1>{{ member.first_name }} {{ member.last_name }} <em class="text-muted"><small>{{ years }}</small></em></h1>
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col col-lg-2">
+                {% if member.picture %}
+                    <img src="{{ member.picture.url }}" class="rounded-circle" height="100" width="100">
+                {% else %}
+                    <img src="{% static 'img/no-image.png' %}" class="rounded-circle" height="100" width="100">
+                {% endif %}
+            </div>
+            <div class="col-6">
+                <h1>{{ member.first_name }} {{ member.last_name }} <small>{{ years }}</small></h1>
+            </div>
+        </div>
+    </div>
+    <h2>Description:</h2>
+    {% if  member.description %}
+    <p><i>{{ member.description }}</i></p>
+    {% else %}
+    <p><i>No description.</i></p>
+    {% endif %}
+    {% if member.member_is_user %}
+        <a class="btn btn-primary" href="{% url 'clubs:edit_member' member.id %}" role="button">
+            Edit Member Info</a>
+    {% endif %}
 {% endblock %}
