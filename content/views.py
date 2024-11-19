@@ -59,7 +59,7 @@ def seeking_ad(request, ad_id=0):
             form = SeekingAdForm()
         else:
             ad_kwargs = {"id": ad_id}
-            if user_is_staff:
+            if not user_is_staff:
                 ad_kwargs["owner"] = request.user
             ad = get_object_or_404(SeekingAd, **ad_kwargs)
             form = SeekingAdForm(instance=ad)
@@ -68,7 +68,7 @@ def seeking_ad(request, ad_id=0):
             form = SeekingAdForm(request.POST)
         else:
             ad_kwargs = {"id": ad_id}
-            if user_is_staff:
+            if not user_is_staff:
                 ad_kwargs["owner"] = request.user
             ad = get_object_or_404(SeekingAd, **ad_kwargs)
             form = SeekingAdForm(request.POST, instance=ad)
