@@ -34,8 +34,8 @@ def member(request, member_id):
     if request.user.is_staff:
         member.controller = True
     if hasattr(request.user, "userprofile"):
-        member.controller = request.user.userprofile.member_profile.id == member_id
-    member.member_is_user = member_is_user
+        if request.user.userprofile.member_profile:
+            member.controller = request.user.userprofile.member_profile.id == member_id
     years = member.calculate_years()
 
     data = {"member": member,
@@ -204,6 +204,7 @@ def add_edit_venue(request, venue_id=0):
     if request.method == "GET":
         if add:
             form = VenueForm()
+            venue = None
         else:
             form = VenueForm(instance=venue)
 
