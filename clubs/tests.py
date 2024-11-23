@@ -1,7 +1,9 @@
+import tempfile
+from base64 import b64decode
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils.timezone import make_aware, datetime
+from django.core.files.uploadedfile import SimpleUploadedFile
 from clubs.models import Member, Venue
 
 def raises_an_error():
@@ -17,6 +19,10 @@ class TestClubs(TestCase):
         self.PASSWORD = "notsecure"
         self.user = self.UserModel.objects.create_user(username="testuser", password=self.PASSWORD)
         self.owner = self.UserModel.objects.create_user(username="owner", password=self.PASSWORD)
+
+        #Base64 encoded version of a single pixel GIF image
+        image = "R0lGODdhAQABAIABAP///wAAACwAAAAAAQABAAACAkQBADs="
+        self.image = b64decode(image)
 
     def test_member_view(self):
         url = f'/clubs/member/{self.member.id}/'
@@ -35,7 +41,7 @@ class TestClubs(TestCase):
                       str(response.content))
 
     def test_member_404(self):
-        url = f'/clubs/member/11/'
+        url = '/clubs/member/11/'
         response = self.client.get(url)
         self.assertEqual(302, response.status_code)  # Redirect to login page
 
@@ -88,3 +94,21 @@ class TestClubs(TestCase):
         self.client.login(username="testuser", password=self.PASSWORD)
         response = self.client.post(url, data)
         self.assertEqual(404, response.status_code)
+
+    @override_settings(
+        MEDIA_ROOT=tempfile.gettempdir()
+    )
+    def test_add_edit_venue_picture(self):
+        file = SimpleUploadedFile('test.gif', self.image)
+        data = {
+            'name': "TestName",
+            "description": "Description",
+            "picture": file,
+        }
+        self.client.login(username="owner", password=self.PASSWORD)
+        url = "/clubs/edit_venue/0/"
+        response = self.client.post(url, data)
+
+        self.assertEqual(302, response.status_code)
+        venue = Venue.objects.first()
+        self.assertIsNotNone(venue.picture)

@@ -18,6 +18,7 @@ class Member(models.Model):
     class Meta:
         ordering = ["last_name", "first_name"]
         indexes = [models.Index(fields=["last_name", "first_name"])]
+
     def __str__(self):
         return f'Member(id={self.id}, last_name={self.last_name})'
 
@@ -28,8 +29,8 @@ class Member(models.Model):
         years = now.year - birth.year - ((now.month, now.day) < (birth.month, birth.day))
 
         return years
-    calculate_years.short_description = "Years Old"
 
+    calculate_years.short_description = "Years Old"
 
 
 class Club(models.Model):
@@ -42,6 +43,7 @@ class Club(models.Model):
     def __str__(self):
         return f"Club(id={self.id}, name={self.name})"
 
+
 class Venue(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField(blank=True)
@@ -49,8 +51,10 @@ class Venue(models.Model):
 
     class Meta:
         ordering = ["name"]
+
     def __str__(self):
         return f"Venue(id={self.id}, name={self.name})"
+
 
 class Table(models.Model):
     number = models.IntegerField(validators=[MinValueValidator(1)], unique=True)
@@ -63,6 +67,7 @@ class Table(models.Model):
 
     def __str__(self):
         return f"Table(id={self.id}, number={self.number})"
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -83,11 +88,13 @@ def user_post_save(sender, **kwargs):
             # No UserProfile exists for this user, create one
             UserProfile.objects.create(user=user)
 
+
 # Login failed signal
 @receiver(user_login_failed)
 def track_login_failure(sender, **kwargs):
     username = kwargs['credentials']['username']
-    url_and_params = lambda request:  request.path + '?next=' + request.GET['next'][1:] if request.GET else request.path
+    url_and_params = lambda request: request.path + '?next=' + request.GET['next'][1:] \
+        if request.GET else request.path
     url = url_and_params(request=kwargs['request'])
 
     print(f"LOGIN Failure by {username} for {url}")

@@ -1,15 +1,14 @@
-import datetime
+from datetime import date
 
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.paginator import Paginator
+from django.db.models import Count
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Count, F, Q
-from django.contrib.auth.decorators import login_required, user_passes_test
 
-from clubs.models import Member, Club, Venue, Table
 from clubs.forms import VenueForm, MemberForm
+from clubs.models import Member, Club, Venue
 
-from datetime import date
 
 def _get_items_per_page(request, default):
     # Determine number of items per page, disallowing <1 and >50
@@ -20,6 +19,7 @@ def _get_items_per_page(request, default):
         per_page = 50
     return per_page
 
+
 def _get_page(request, paginator):
     page_num = int(request.GET.get('page', 1))
     if page_num < 1:
@@ -27,6 +27,8 @@ def _get_page(request, paginator):
     page_obj = paginator.get_page(page_num)
 
     return page_obj
+
+
 @login_required
 def member(request, member_id):
     member = get_object_or_404(Member, id=member_id)
@@ -38,10 +40,11 @@ def member(request, member_id):
             member.controller = request.user.userprofile.member_profile.id == member_id
     years = member.calculate_years()
 
-    data = {"member": member,
-            "years": years}
+    data = {"member": member, "years": years}
 
     return render(request, "member.html", data)
+
+
 @login_required
 def add_edit_member(request, member_id=0):
     add, edit = member_id == 0, member_id != 0
@@ -51,8 +54,7 @@ def add_edit_member(request, member_id=0):
         member_id = request.user.userprofile.member_profile.id
     if edit:
         member = get_object_or_404(Member, id=member_id)
-        if not request.user.userprofile.member_profile.member_id == member_id and \
-           not request.user.is_staff:
+        if not request.user.userprofile.member_profile.member_id == member_id and not request.user.is_staff:
             raise Http404("You can only edit your own member profile info.")
 
     if request.method == "GET":
@@ -61,7 +63,7 @@ def add_edit_member(request, member_id=0):
         else:
             form = MemberForm(instance=member)
 
-    else: #POST
+    else:  # POST
         if add:
             member = Member.objects.create(date_of_birth=date(1990, 1, 1))
         form = MemberForm(request.POST, request.FILES, instance=member)
@@ -74,10 +76,7 @@ def add_edit_member(request, member_id=0):
                 user_profile.save()
             return redirect("clubs:members")
 
-    data = {
-        'form': form,
-        'member': member,
-    }
+    data = {'form': form, 'member': member, }
 
     return render(request, "add_edit_member.html", data)
 
@@ -89,11 +88,7 @@ def members(request):
 
     page_obj = _get_page(request, paginator)
 
-    data = {
-        'members': page_obj.object_list,
-        'page': page_obj,
-        'per_page': per_page,
-    }
+    data = {'members': page_obj.object_list, 'page': page_obj, 'per_page': per_page, }
 
     return render(request, "members.html", data)
 
@@ -113,13 +108,10 @@ def clubs(request):
 
     page_obj = _get_page(request, paginator)
 
-    data = {
-        'clubs': page_obj.object_list,
-        'page': page_obj,
-        'per_page': per_page,
-    }
+    data = {'clubs': page_obj.object_list, 'page': page_obj, 'per_page': per_page, }
 
     return render(request, "clubs.html", data)
+
 
 def venues(request):
     all_venues = Venue.objects.order_by('name')
@@ -128,8 +120,7 @@ def venues(request):
         for venue in all_venues:
             # Mark as controlled if logged user is
             # associated with the venue
-            venue.controlled = \
-                profile.venues_controlled.filter(id=venue.id).exists()
+            venue.controlled = profile.venues_controlled.filter(id=venue.id).exists()
     else:
         for venue in all_venues:
             venue.controlled = False
@@ -138,10 +129,10 @@ def venues(request):
 
     page_obj = _get_page(request, paginator)
 
-    data = {'venues': page_obj.object_list,
-            'page': page_obj}
+    data = {'venues': page_obj.object_list, 'page': page_obj}
 
     return render(request, "venues.html", data)
+
 
 def user_associated_with_venue(user):
     try:
@@ -154,16 +145,13 @@ def user_associated_with_venue(user):
 def venues_restricted(request):
     venues(request)
 
+
 @login_required
 def restricted_page(request):
-    data = {
-        'title': 'Restricted Page',
-        'content': '<h1>You are logged in.</h1>'
-    }
+    data = {'title': 'Restricted Page', 'content': '<h1>You are logged in.</h1>'}
 
-    return render(request,
-                  "general.html",
-                  data)
+    return render(request, "general.html", data)
+
 
 @login_required
 def member_restricted(request, member_id):
@@ -186,19 +174,16 @@ def member_restricted(request, member_id):
     content = f"""
         <h1>Member Page: {member.last_name}</h1>
 """
-    data = {
-        'title': 'Member Restricted',
-        'content': content,
-    }
+    data = {'title': 'Member Restricted', 'content': content, }
     return render(request, "general.html", data)
+
 
 @login_required
 def add_edit_venue(request, venue_id=0):
     add, edit = venue_id == 0, venue_id != 0
     if edit:
         venue = get_object_or_404(Venue, id=venue_id)
-        if not request.user.userprofile.venues_controlled.filter(
-                id=venue_id).exists():
+        if not request.user.userprofile.venues_controlled.filter(id=venue_id).exists():
             raise Http404("You can only edit controlled venues.")
 
     if request.method == "GET":
@@ -208,12 +193,11 @@ def add_edit_venue(request, venue_id=0):
         else:
             form = VenueForm(instance=venue)
 
-    else: #POST
+    else:  # POST
         if add:
             venue = Venue.objects.create()
 
-        form = VenueForm(request.POST, request.FILES,
-                         instance=venue)
+        form = VenueForm(request.POST, request.FILES, instance=venue)
 
         if form.is_valid():
             venue = form.save()
@@ -223,9 +207,6 @@ def add_edit_venue(request, venue_id=0):
             return redirect("clubs:venues")
 
     # GET or form is not valid
-    data = {
-        'form': form,
-        'venue': venue,
-    }
+    data = {'form': form, 'venue': venue, }
 
     return render(request, "add_edit_venue.html", data)

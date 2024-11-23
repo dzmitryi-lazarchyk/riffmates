@@ -95,7 +95,8 @@ class ClubAdmin(admin.ModelAdmin):
             result = []
             members_url = reverse("admin:clubs_member_changelist")
             for member in members[:3]:
-                html = f'<a href="{members_url}?id={member.id}">{member.first_name} {member.last_name}</a>'
+                html = (f'<a href="{members_url}'
+                        f'?id={member.id}">{member.first_name} {member.last_name}</a>')
                 result.append(html)
             if clubs_count > 3:
                 # Show changelist link of all club's members
@@ -140,4 +141,3 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
-

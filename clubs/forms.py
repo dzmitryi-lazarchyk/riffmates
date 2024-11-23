@@ -1,5 +1,5 @@
 from django import forms
-from django.forms.widgets import SelectDateWidget, DateInput
+from django.forms.widgets import DateInput
 
 from clubs.models import Venue, Member
 
