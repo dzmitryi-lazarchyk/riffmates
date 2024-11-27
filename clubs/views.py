@@ -7,7 +7,7 @@ from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 
 from clubs.forms import VenueForm, MemberForm
-from clubs.models import Member, Club, Venue
+from clubs.models import Member, Club, Venue, UserProfile
 
 
 def _get_items_per_page(request, default):
@@ -54,8 +54,11 @@ def add_edit_member(request, member_id=0):
         member_id = request.user.userprofile.member_profile.id
     if edit:
         member = get_object_or_404(Member, id=member_id)
-        if not request.user.userprofile.member_profile.member_id == member_id and not request.user.is_staff:
-            raise Http404("You can only edit your own member profile info.")
+        if request.user.userprofile.member_profile:
+            if not request.user.userprofile.member_profile.id == member_id:
+                raise Http404("You can only edit your own member profile info.")
+        elif (not request.user.is_staff) and (not request.user.is_superuser):
+            raise Http4004("You can only edit your own member profile info.")
 
     if request.method == "GET":
         if add:
