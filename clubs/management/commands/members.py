@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.core.management.base import BaseCommand, CommandError
+
 from clubs.models import Member
 class Command(BaseCommand):
     help = "Lists all members"
