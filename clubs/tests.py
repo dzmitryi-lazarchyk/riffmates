@@ -1,10 +1,12 @@
 import tempfile
 from base64 import b64decode
+import io
 
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from django.utils.timezone import make_aware, datetime
+from django.core.management import call_command
 
 from clubs.models import Member, Venue
 
@@ -222,3 +224,30 @@ class TestClubs(TestCase):
         self.assertEqual(5, len(response.context['members']))
         self.assertTrue(response.context['page'].has_next())
         self.assertFalse(response.context['page'].has_previous())
+
+class TestMembersCommand(TestCase):
+    def setUp(self):
+        self.member = Member.objects.create(
+            first_name="First",
+            last_name="Last",
+            date_of_birth=datetime(1990, 1, 1)
+        )
+
+    def test_command(self):
+        output = io.StringIO()
+        call_command("members", stdout=output)
+        self.assertIn("First", output.getvalue())
+
+        for i in range(1, 10):
+            Member.objects.create(
+                first_name=f"First{i}",
+                last_name=f"Last{i}",
+                date_of_birth=datetime(1995, 1, i)
+            )
+
+        output = io.StringIO()
+        call_command("members", stdout=output, date_of_birth="1995-01-5")
+        num_of_members = len(output.getvalue().strip().split('\n'))
+        self.assertEqual(5, num_of_members)
+
+
