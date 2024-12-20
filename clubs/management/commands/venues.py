@@ -14,7 +14,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         venues = Venue.objects.all()
-        truncator = Truncator
 
         for venue in venues:
             truncator = Truncator(venue.description)

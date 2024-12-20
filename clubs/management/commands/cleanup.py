@@ -6,6 +6,7 @@ from django.conf import settings
 
 from clubs.models import Member, Venue
 
+
 class Command(BaseCommand):
     help = "Removes uploaded files not owned by Member or Venue"
 
