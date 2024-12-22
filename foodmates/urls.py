@@ -21,6 +21,12 @@ from django.conf.urls.static import static
 
 from home import views as home_views
 
+from ninja import NinjaAPI
+from home.api import router as home_router
+
+api = NinjaAPI(version="1.0")
+api.add_router("/home/", home_router)
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
@@ -31,6 +37,7 @@ urlpatterns = [
     path('adv_news/', home_views.news_advanced, name="news_advanced"),
     path('clubs/', include("clubs.urls", namespace='clubs')),
     path('content/', include("content.urls", namespace='content')),
+    path('api/v1/', api.urls),
     path('', home_views.home, name="home"),
 ]
 
