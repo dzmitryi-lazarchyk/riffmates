@@ -23,9 +23,11 @@ from home import views as home_views
 
 from ninja import NinjaAPI
 from home.api import router as home_router
+from promoters.api import router as promoter_router
 
 api = NinjaAPI(version="1.0")
 api.add_router("/home/", home_router)
+api.add_router("/promoters/", promoter_router)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
