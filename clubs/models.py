@@ -6,6 +6,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.contrib.auth.signals import user_login_failed
+from django.utils.text import slugify
 
 
 class Member(models.Model):
@@ -54,6 +55,11 @@ class Venue(models.Model):
 
     def __str__(self):
         return f"Venue(id={self.id}, name={self.name})"
+
+    @property
+    def slug(self):
+        slug = slugify(self.name) + "-" + str(self.id)
+        return slug
 
 
 class Table(models.Model):
