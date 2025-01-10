@@ -68,6 +68,17 @@ padding: 60px 15px 0;
     <main class="flex-shrink-0">
         <div class="container">
         </br>
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        {% with tag=message.tags %}
+                        <div class="alert alert-{{ tag }} alert-dismissible fade show" role="alert">{{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endwith %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
             {% block content %}
             {% endblock content %}
         </div>

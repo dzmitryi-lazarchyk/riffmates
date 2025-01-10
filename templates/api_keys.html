@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Your API keys </h1>
+    <br>
+<div class="container">
+            <ul class="list-group list-group-light">
+        {% for key in keys %}
+
+                <li class="list-group-item d-flex justify-content-between align-items-center">{{ key }}
+
+                    <a class="btn btn-danger" href="{% url 'api:delete_key' key.id %}" role="button">Delete Key</a>
+
+                </li>
+
+
+    {% empty %}
+        <h3>You don't have any API keys yet.</h3>
+    {% endfor %}
+                </ul>
+            </div>
+    <br>
+    <form method="post" action="{% url 'api:keys' %}">
+        {% csrf_token %}
+        <button class="btn btn-primary" type="submit">
+            Generate new API key
+        </button>
+    </form>
+{% endblock %}

@@ -6,13 +6,18 @@ from django.utils.text import slugify
 
 from ninja import Router, ModelSchema, Field, FilterSchema, Query
 
-from .models import Venue
+from .models import Venue, Table
 
 router = Router()
 
+class RoomSchema(ModelSchema):
+    class Meta:
+        model = Table
+        fields = ["id", "number", "seats"]
 class VenueOut(ModelSchema):
     slug: str
     url: str
+    tables: list[RoomSchema] = Field(...)
 
     class Meta:
         model = Venue
@@ -48,3 +53,5 @@ def venues(request, filters: VenueFilter = Query(...)):
     venues = Venue.objects.all()
     venues = filters.filter(venues)
     return venues
+
+
