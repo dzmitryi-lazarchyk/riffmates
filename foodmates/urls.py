@@ -20,6 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from home import views as home_views
+from .api import api
 
 
 
@@ -33,7 +34,8 @@ urlpatterns = [
     path('adv_news/', home_views.news_advanced, name="news_advanced"),
     path('clubs/', include("clubs.urls", namespace='clubs')),
     path('content/', include("content.urls", namespace='content')),
-    path('api/', include("api.urls", namespace="api")),
+    path('api/manage/', include("api.urls", namespace='api_manage')),
+    path('api/v1/', api.urls),
     path('', home_views.home, name="home"),
 ]
 

@@ -2,11 +2,11 @@ from typing import Optional, Any
 
 from django.http import HttpRequest
 from django.contrib.auth.hashers import check_password
-from ninja.security import APIKeyHeader
+from ninja.security import APIKeyHeader, APIKeyQuery
 
 from .models import ApiKey
 
-class AuthAPIKeyHeader(APIKeyHeader):
+class AuthCheck():
     param_name = "X-API-KEY"
 
     def authenticate(self, request: HttpRequest, key: Optional[str]) -> Optional[Any]:
@@ -31,6 +31,13 @@ class AuthAPIKeyHeader(APIKeyHeader):
 
         return False
 
-api_key = ApiKey()
+class QueryKey(AuthCheck, APIKeyQuery):
+    pass
+
+class HeaderKey(AuthCheck, APIKeyQuery):
+    pass
+
+api_key_querry = QueryKey()
+api_key_header = HeaderKey()
 
 

@@ -9,7 +9,7 @@
 
                 <li class="list-group-item d-flex justify-content-between align-items-center">{{ key }}
 
-                    <a class="btn btn-danger" href="{% url 'api:delete_key' key.id %}" role="button">Delete Key</a>
+                    <a class="btn btn-danger" href="{% url 'api_manage:delete_key' key.id %}" role="button">Delete Key</a>
 
                 </li>
 
@@ -20,7 +20,7 @@
                 </ul>
             </div>
     <br>
-    <form method="post" action="{% url 'api:keys' %}">
+    <form method="post" action="{% url 'api_manage:keys' %}">
         {% csrf_token %}
         <button class="btn btn-primary" type="submit">
             Generate new API key

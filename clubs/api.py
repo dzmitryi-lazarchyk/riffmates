@@ -7,6 +7,7 @@ from django.utils.text import slugify
 from ninja import Router, ModelSchema, Field, FilterSchema, Query
 
 from .models import Venue, Table
+from api.auth import api_key_header, api_key_querry
 
 router = Router()
 
@@ -54,4 +55,13 @@ def venues(request, filters: VenueFilter = Query(...)):
     venues = filters.filter(venues)
     return venues
 
+class VenueIn(ModelSchema):
+    class Meta:
+        model = Venue
+        fields = ['name', 'description']
 
+
+@router.post("/venue/", response=VenueOut, auth=[api_key_header, api_key_querry])
+def create_venue(request, payload: VenueIn):
+    venue = Venue.objects.create(**payload.dict())
+    return venue
