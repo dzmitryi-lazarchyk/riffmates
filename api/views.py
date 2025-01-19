@@ -33,5 +33,5 @@ def delete_key(request, key_id):
     prefix = key.prefix
     key.delete()
     messages.add_message(request, messages.INFO, f"API key {prefix} successfully deleted.")
-    return redirect("api:keys")
+    return redirect("api_manage:keys")
 

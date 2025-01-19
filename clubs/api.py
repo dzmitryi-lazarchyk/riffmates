@@ -11,14 +11,14 @@ from api.auth import api_key_header, api_key_querry
 
 router = Router()
 
-class RoomSchema(ModelSchema):
+class TableSchema(ModelSchema):
     class Meta:
         model = Table
         fields = ["id", "number", "seats"]
 class VenueOut(ModelSchema):
     slug: str
     url: str
-    tables: list[RoomSchema] = Field(...)
+    tables: list[TableSchema] = Field(...)
 
     class Meta:
         model = Venue
@@ -55,13 +55,30 @@ def venues(request, filters: VenueFilter = Query(...)):
     venues = filters.filter(venues)
     return venues
 
+class TableIn(ModelSchema):
+    class Meta:
+        model = Table
+        fields = ['number', 'seats']
+
 class VenueIn(ModelSchema):
+    tables: list[TableIn] = []
     class Meta:
         model = Venue
         fields = ['name', 'description']
 
 
+
+
 @router.post("/venue/", response=VenueOut, auth=[api_key_header, api_key_querry])
 def create_venue(request, payload: VenueIn):
-    venue = Venue.objects.create(**payload.dict())
+    data = payload.dict()
+    data_tables = data['tables']
+    data.pop('tables')
+    venue = Venue.objects.create(**data)
+    if data_tables:
+        for data_table in data_tables:
+            Table.objects.create(venue=venue,
+                                 number=data_table['number'],
+                                 seats=data_table['seats'])
+
     return venue

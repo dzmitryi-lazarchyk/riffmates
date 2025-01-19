@@ -63,7 +63,7 @@ class Venue(models.Model):
 
 
 class Table(models.Model):
-    number = models.IntegerField(validators=[MinValueValidator(1)], unique=True)
+    number = models.IntegerField(validators=[MinValueValidator(1)])
     seats = models.PositiveIntegerField(validators=[MinValueValidator(2)])
     venue = models.ForeignKey(Venue, on_delete=models.CASCADE, related_name='tables')
 
