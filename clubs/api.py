@@ -3,6 +3,7 @@ from typing import Optional
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.urls import reverse
 from django.utils.text import slugify
+from django.http import Http404
 
 from ninja import Router, ModelSchema, Field, FilterSchema, Query
 
@@ -118,14 +119,21 @@ def delete_venue(request, venue_id:int):
 
     return {"success": True}
 
-class MemberSchema(ModelSchema):
+class MemberOut(ModelSchema):
     age: int = Field(None, alias="calculate_years")
     class Meta:
         model = Member
         fields = ["first_name", "last_name",
                   "date_of_birth", "description"]
+
+class MemberIn(ModelSchema):
+    class Meta:
+        model = Member
+        fields = ["first_name", "last_name",
+                  "date_of_birth", "description"]
+
 class ClubOut(ModelSchema):
-    members: list[MemberSchema] = Field()
+    members: list[MemberOut] = Field()
     class Meta:
         model = Club
         fields = ["name"]
@@ -133,3 +141,13 @@ class ClubOut(ModelSchema):
 def get_clubs(request):
     clubs = Club.objects.all()
     return clubs
+
+@router.put("/member/{member_id}/", response=MemberOut, auth=[api_key_header, api_key_querry])
+def put_member(request, member_id:int, payload: MemberIn):
+    data = payload.dict()
+    member = Member.objects.filter(id=member_id)
+    if not member:
+        raise Http404
+    member.update(**data)
+
+    return member[0]
