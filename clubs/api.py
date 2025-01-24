@@ -1,6 +1,6 @@
 from typing import Optional
 
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from django.urls import reverse
 from django.utils.text import slugify
 
@@ -41,12 +41,9 @@ class VenueFilter(FilterSchema):
     name: Optional[str] = Field(None,
                                 q=['name__istartswith'])
 
-@router.get("/venue/{venue_id}/",
-            response=VenueOut,
-            url_name="fetch_venue")
-def fetch_venue(request, venue_id):
-    venue = get_object_or_404(Venue, id=venue_id)
-    return venue
+
+
+
 
 @router.get("/venues/",
             response=list[VenueOut])
@@ -82,3 +79,41 @@ def create_venue(request, payload: VenueIn):
                                  seats=data_table['seats'])
 
     return venue
+
+@router.get("/venue/{int:venue_id}/",
+            response=VenueOut,
+            url_name="fetch_venue")
+def fetch_venue(request, venue_id: int):
+    venue = get_object_or_404(Venue, id=venue_id)
+    return venue
+
+@router.put("/venue/{int:venue_id}/", response=VenueOut, auth=[api_key_header, api_key_querry])
+def update_venue(request, venue_id: int, payload: VenueIn):
+    data = payload.dict()
+    data_tables = data['tables']
+    data.pop('tables')
+    venue = Venue.objects.filter(id=venue_id)
+    venue.update(**data)
+    venue = venue[0]
+    tables = Table.objects.filter(venue=venue)
+    if data_tables:
+        for data_table in data_tables:
+            try:
+                table = tables.get(number=data_table['number'])
+                data_table.pop('number')
+                for key, value in data_table.items():
+                    setattr(table, key, value)
+                table.save()
+            except Table.DoesNotExist:
+                Table.objects.create(venue=venue,
+                                     number=data_table['number'],
+                                     seats=data_table['seats'])
+
+    return venue
+
+@router.delete("/venue/{int:venue_id}", auth=[api_key_header, api_key_querry])
+def delete_venue(request, venue_id:int):
+    venue = get_object_or_404(Venue, id=venue_id)
+    venue.delete()
+
+    return {"success": True}

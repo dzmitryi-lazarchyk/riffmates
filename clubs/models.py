@@ -68,7 +68,7 @@ class Table(models.Model):
     venue = models.ForeignKey(Venue, on_delete=models.CASCADE, related_name='tables')
 
     class Meta:
-        unique_together = [["number", "venue"]]
+        unique_together = [["venue", "number"]]
         ordering = ["number"]
 
     def __str__(self):
