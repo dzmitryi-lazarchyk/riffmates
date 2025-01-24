@@ -6,7 +6,7 @@ from django.utils.text import slugify
 
 from ninja import Router, ModelSchema, Field, FilterSchema, Query
 
-from .models import Venue, Table
+from .models import Venue, Table, Club, Member
 from api.auth import api_key_header, api_key_querry
 
 router = Router()
@@ -117,3 +117,19 @@ def delete_venue(request, venue_id:int):
     venue.delete()
 
     return {"success": True}
+
+class MemberSchema(ModelSchema):
+    age: int = Field(None, alias="calculate_years")
+    class Meta:
+        model = Member
+        fields = ["first_name", "last_name",
+                  "date_of_birth", "description"]
+class ClubOut(ModelSchema):
+    members: list[MemberSchema] = Field()
+    class Meta:
+        model = Club
+        fields = ["name"]
+@router.get("/clubs/", response=list[ClubOut])
+def get_clubs(request):
+    clubs = Club.objects.all()
+    return clubs

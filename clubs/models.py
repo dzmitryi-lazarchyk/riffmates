@@ -35,7 +35,7 @@ class Member(models.Model):
 
 
 class Club(models.Model):
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=50)
     members = models.ManyToManyField(Member)
 
     class Meta:
