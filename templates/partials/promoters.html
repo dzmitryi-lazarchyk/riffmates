@@ -1,0 +1,21 @@
+<ul>
+    {% for promoter in promoters %}
+        <li>
+            {{ promoter.full_name }}
+            {% if promoter.birth %}
+                (
+                    {{promoter.birth}} -
+                    {% if promoter.death %}
+                        {{promoter.death}}
+                    {% endif %}
+                )
+            {% endif %}
+        </li>
+    {% empty %}
+    <li><i>No promoters yet.</i></li>
+    {% endfor %}
+</ul>
+
+{% if page.has_other_pages %}
+    {% include 'pagination.html' %}
+{% endif %}

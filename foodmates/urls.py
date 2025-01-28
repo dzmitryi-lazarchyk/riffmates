@@ -34,6 +34,7 @@ urlpatterns = [
     path('adv_news/', home_views.news_advanced, name="news_advanced"),
     path('clubs/', include("clubs.urls", namespace='clubs')),
     path('content/', include("content.urls", namespace='content')),
+    path('promoters/', include('promoters.urls', namespace='promoters')),
     path('api/manage/', include("api.urls", namespace='api_manage')),
     path('api/v1/', api.urls),
     path('', home_views.home, name="home"),
