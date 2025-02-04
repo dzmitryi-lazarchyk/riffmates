@@ -17,4 +17,5 @@ urlpatterns = [
     path('edit_venue/<int:venue_id>/', views.add_edit_venue, name="edit_venue"),
     path('add_edit_member/', views.add_edit_member, name="add_member"),
     path('add_edit_member/<int:member_id>/', views.add_edit_member, name="edit_member"),
+    path('search_members/', views.search_members, name="search_members"),
 ]

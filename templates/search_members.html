@@ -1,0 +1,12 @@
+{% for member in members %}
+    <p>
+        {% if member.picture %}
+            <img src="{{ member.picture.url }}" width="30" height="30" alt="">
+        {% else %}
+            <img src="{% static 'img/no-image.png' %}" width="30" height="30" alt="">
+        {% endif %}
+        {{ member.first_name }} {{ member.last_name }}
+    </p>
+{% empty %}
+    <h2>No members found for "{{ search_text }}".</h2>
+{% endfor %}

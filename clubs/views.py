@@ -1,10 +1,14 @@
+import urllib.parse
 from datetime import date
 
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.paginator import Paginator
-from django.db.models import Count
+from django.db.models import Count, Q
+from django.db.models.functions import Greatest
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
+from django.conf import settings
+from django.contrib.postgres.search import TrigramSimilarity
 
 from clubs.forms import VenueForm, MemberForm
 from clubs.models import Member, Club, Venue
@@ -195,3 +199,39 @@ def add_edit_venue(request, venue_id=0):
     data = {'form': form, 'venue': venue, }
 
     return render(request, "add_edit_venue.html", data)
+
+def search_members(request):
+    search_text = request.GET.get("search_text", "")
+    print(search_text)
+    search_text = urllib.parse.unquote(search_text)
+    search_text = search_text.strip()
+    members = []
+
+    # DEBUG with sqlite3
+    if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.sqlite3':
+        if search_text:
+            parts = search_text.split()
+
+            q = (Q(first_name__istartswith=parts[0]) |
+                 Q(last_name__istartswith=parts[0]))
+            for part in parts[1:]:
+                q |= (Q(first_name__istartswith=part) |
+                      Q(last_name__istartswith=part))
+
+            members = Member.objects.filter(q)
+    # DEBUG False with PostgreSQL and trigram
+    elif settings.DATABASES['default']['ENGINE'] == 'django.db.backends.postgresql':
+        if search_text:
+            members = Member.objects.annotate(
+                similarity=Greatest(
+                    TrigramSimilarity('first_name', search_text),
+                    TrigramSimilarity('last_name', search_text)
+                )
+            ).filter(similarity__gte=0.1).order_by('-similarity')
+
+    data = {
+        "search_text": search_text,
+        "members": members
+    }
+
+    return render(request, "search_members.html", data)
