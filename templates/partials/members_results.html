@@ -1,0 +1,46 @@
+
+<table class="table">
+    <tbody>
+        {% for member in members %}
+            {% if page.has_other_pages and forloop.first %}
+    <br>
+    {% include 'pagination.html' %}
+{% endif %}
+            <tr>
+                <td class="border-top-0">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                        {% if member.picture %}
+                            <img class="thumb-md rounded-circle" src="{{ member.picture.url }}" height="50" width="50" alt="">
+                        {% else %}
+                            <img  class="img-fluid rounded-start" src="{% static 'img/no-image.png' %}" height="50" width="50" alt="">
+                        {% endif %}
+                        </div>
+                            <div class="flex-grow-1 ms-2">
+                                <p class="mb-0">{{ member.first_name }} {{ member.last_name }}</p>
+                            </div>
+                    </div>
+                </td>
+            </tr>
+
+        {% empty %}
+                <h2>No members found for "{{ search_text }}".</h2>
+
+        {% endfor %}
+
+    </tbody>
+</table>
+
+<!--Infinite scroll-->
+<!--{% if page.has_next  and forloop.last %}-->
+<!--<div hx-get="?page={{ page.next_page_number }}&per_page={{ per_page }}{% if search_text %}&search_text={{ search_text }}{% endif %}"-->
+<!--hx-trigger="revealed"-->
+<!--hx-swap="outerHTML">-->
+<!--    <div class="d-flex justify-content-center">-->
+<!--        <div class="spinner-border text-primary" role="status">-->
+<!--            <span class="sr-only"></span>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<!--{% endif %}-->
+

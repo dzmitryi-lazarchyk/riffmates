@@ -71,15 +71,51 @@ def add_edit_member(request, member_id=0):
 
 
 def members(request):
-    all_members = Member.objects.all().order_by("last_name")
-    per_page = get_items_per_page(request, 5)
-    paginator = Paginator(all_members, per_page)
+
+    if request.htmx:
+        template_name = "partials/members_results.html"
+    else:
+        template_name = "members.html"
+
+    members = []
+    search_text = request.GET.get("search_text", "")
+
+    if search_text:
+        search_text = urllib.parse.unquote(search_text)
+        search_text = search_text.strip()
+        # DEBUG with sqlite3
+        if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.sqlite3':
+            if search_text:
+                parts = search_text.split()
+
+                q = (Q(first_name__istartswith=parts[0]) |
+                     Q(last_name__istartswith=parts[0]))
+                for part in parts[1:]:
+                    q |= (Q(first_name__istartswith=part) |
+                          Q(last_name__istartswith=part))
+
+                members = Member.objects.filter(q)
+        # DEBUG False with PostgreSQL and trigram
+        elif settings.DATABASES['default']['ENGINE'] == 'django.db.backends.postgresql':
+            members = Member.objects.annotate(
+                similarity=Greatest(
+                    TrigramSimilarity('first_name', search_text),
+                    TrigramSimilarity('last_name', search_text)
+                )
+            ).filter(similarity__gte=0.1).order_by('-similarity')
+    else:
+        members = Member.objects.all().order_by("last_name")
+    print(request.GET)
+    per_page = get_items_per_page(request, 1)
+    paginator = Paginator(members, per_page)
 
     page_obj = get_page(request, paginator)
-
-    data = {'members': page_obj.object_list, 'page': page_obj, 'per_page': per_page, }
-
-    return render(request, "members.html", data)
+    data = {'members': page_obj.object_list,
+            'page': page_obj,
+            'per_page': per_page,
+            "search_text": search_text,
+            }
+    return render(request, template_name, data)
 
 
 def club(request, club_id):
@@ -202,7 +238,7 @@ def add_edit_venue(request, venue_id=0):
 
 def search_members(request):
     search_text = request.GET.get("search_text", "")
-    print(search_text)
+    print(request.GET)
     search_text = urllib.parse.unquote(search_text)
     search_text = search_text.strip()
     members = []
@@ -234,4 +270,4 @@ def search_members(request):
         "members": members
     }
 
-    return render(request, "search_members.html", data)
+    return render(request, "partials/members_results.html", data)
