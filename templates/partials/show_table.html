@@ -1,0 +1,8 @@
+<li id="table-row-{{ table.id }}">
+    {{ table.number }} &nbsp;&nbsp;
+    <a
+        hx-get="{% url 'edit_table_form' table.id %}"
+        hx-target="#table-row-{{ table.id }}"
+        style="cursor: pointer; text-decoration:underline"
+    >(Edit)</a>
+</li>

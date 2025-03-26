@@ -106,7 +106,7 @@ def members(request):
     else:
         members = Member.objects.all().order_by("last_name")
     print(request.GET)
-    per_page = get_items_per_page(request, 1)
+    per_page = get_items_per_page(request, 10)
     paginator = Paginator(members, per_page)
 
     page_obj = get_page(request, paginator)
@@ -271,3 +271,11 @@ def search_members(request):
     }
 
     return render(request, "partials/members_results.html", data)
+
+@login_required
+def table_editor(request, venue_id):
+    venue = get_object_or_404(Venue, id=venue_id,
+                              userprofile=request.user.userprofile)
+    data = {'venue': venue}
+
+    return render(request, "table_editor.html", data)
